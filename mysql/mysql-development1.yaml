@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: go-mysql
+spec:
+  selector:
+    matchLabels:
+      app: go-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: go-mysql
+    spec:
+      containers:
+        - image: mysql:5.7.21
+          name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: vnc-host-path
+                mountPath: /usr/data/mysql
+      volumes:
+        - name: vnc-host-path
+          hostpath: /usr/data/mysql
+
